@@ -1,0 +1,2 @@
+
+docker run  --rm -it --name ng  -p 80:80 -p 443:443 -v c:\projects\kerberos\docker-kerberos\docker-kerberos\nginx\2\www:/data/www -v c:\projects\kerberos\docker-kerberos\docker-kerberos\nginx\2\nginx.conf:/etc/nginx/nginx.conf nginx2

@@ -1,0 +1,63 @@
+version: "2"
+services:
+  # This service MUST have the name "kdc-kadmin" otherwise every kerberos client won't be able to talk with the KDC.
+  # If you would like to change the name edit the file configureKerberosClient.sh and change the configurations
+  # "kdc" and "admin_server" in the /etc/krb5.conf section.
+  kdc-kadmin:
+    build: ./kdc-kadmin
+    env_file: kerberos.env
+    volumes:
+      # This is needed otherwise there won't be enough entropy to generate a new kerberos realm
+      - /dev/urandom:/dev/random
+
+  kerberos-client:
+    build: ./kerberos-client
+    env_file: kerberos.env
+    depends_on:
+      - kdc-kadmin
+    volumes:
+      - sharedvolume:/shared
+  ngserv:
+    build: ./nginx
+    volumes:
+      - ./nginx/www:/data/www/
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/krb5.conf:/etc/krb5.conf
+      - sharedvolume:/shared
+    ports:
+      - "80:80"
+      - "443:443"
+
+  flask:
+    build: ./flask
+    volumes:
+      - ./src:/opt/app
+    command: ["python3", "/opt/app/main.py"]
+    ports:
+      - "5000:5000"
+#  ngserv2:  this was used for experiments, or as a "console"
+#    build: ./nginx/2
+#    volumes:
+#      - ./nginx/www:/data/www/
+#      - ./nginx2.conf:/etc/nginx/nginx.conf
+#      - ./nginx/krb5.conf:/etc/krb5.conf
+#      - sharedvolume:/shared
+#    ports:
+#      - "81:81"
+#      - "444:444"
+  kerberos-client2:  # Run this again for test, using docker-compose start kerberos-client
+    build: ./kerberos-client2
+    env_file: kerberos.env
+    depends_on:
+      - ngserv
+    volumes:
+      - sharedvolume:/shared
+volumes:
+  sharedvolume:
+# NOTE:
+#  "env_file: kerberos.env" is optional.
+#  In case no .env file is supplied, nor any environment variable is set, the following values will be used:
+#   REALM=EXAMPLE.COM
+#   SUPPORTED_ENCRYPTION_TYPES=aes256-cts-hmac-sha1-96:normal
+#   KADMIN_PRINCIPAL=kadmin/admin
+#   KADMIN_PASSWORD=MITiys4K5
