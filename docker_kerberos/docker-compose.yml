@@ -20,8 +20,8 @@ services:
   ngserv:
     build: ./nginx
     volumes:
-      - ./nginx/www:/data/www/
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/www/:/data/www/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/krb5.conf:/etc/krb5.conf
       - sharedvolume:/shared
     ports:

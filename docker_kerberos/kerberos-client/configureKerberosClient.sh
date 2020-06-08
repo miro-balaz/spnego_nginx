@@ -34,7 +34,7 @@ echo "==========================================================================
 echo "==== Testing ======================================================================"
 echo "==================================================================================="
 
-until kadminCommand "add_principal +allow_forwardable +allow_proxiable +allow_svr +allow_tgs_req +ok_to_auth_as_delegate -pw $USER_PASSWPRD $USER_PRINCIPAL"; do
+until kadminCommand "add_principal +allow_forwardable +allow_proxiable +allow_svr +allow_tgs_req +ok_to_auth_as_delegate -pw $USER_PASSWORD $USER_PRINCIPAL@$REALM"; do
  >&2 eche "KDC is unavailable"
  sleep 1
 done

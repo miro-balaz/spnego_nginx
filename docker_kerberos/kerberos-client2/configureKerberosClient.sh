@@ -7,6 +7,7 @@ KADMIN_PRINCIPAL_FULL=$KADMIN_PRINCIPAL@$REALM
 echo "REALM: $REALM"
 echo "KADMIN_PRINCIPAL_FULL: $KADMIN_PRINCIPAL_FULL"
 echo "KADMIN_PASSWORD: $KADMIN_PASSWORD"
+echo "USER: $USER_PRINCIPAL"
 echo ""
 
 function kadminCommand {
@@ -27,10 +28,16 @@ tee /etc/krb5.conf <<EOF
 		kdc = kdc-kadmin
 		admin_server = kdc-kadmin
 	}
+[domain_realm]
+  .kerberos.server = EXAMPLE.COM
+  .example.com     = EXAMPLE.COM
+  .ngserv = EXAMPLE.COM
+  .docker-kerberos_default = EXAMPLE.COM
+  .DOCKER-KERBEROS_DEFAULT = EXAMPLE.COM
 EOF
 echo ""
 
 kinit -5 -V -k -t /shared/user.keytab $USER_PRINCIPAL@$REALM
 klist
-curl -i --negotiate -u : http://ngserv/index.html
+curl -i -v --negotiate -u : http://ngserv/index.html
 echo "finished"
